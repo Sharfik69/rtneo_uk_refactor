@@ -9,4 +9,6 @@ a = Search('')
 
 a.put_daughter()
 
-a.put_info()
+a.put_info(1000)
+
+a.reformat_uk_json()

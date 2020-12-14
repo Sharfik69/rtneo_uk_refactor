@@ -1,10 +1,16 @@
 *.txt
 *.xlsx
+*.json
 
 __pycache__/
 *.py[cod]
 *$py.class
 
+.idea/
+.idea_modules/
+*.iml
+*.ipr
+*.iws
 
 .Python
 build/

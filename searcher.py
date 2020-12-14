@@ -1,3 +1,6 @@
+import json
+import glob
+
 import psycopg2
 from openpyxl import load_workbook, Workbook
 
@@ -56,7 +59,7 @@ class Search():
         print(bcolors.OKGREEN + '\r2) Сформирован файл со всеми дочерними адресами' + bcolors.ENDC)
 
 
-    def put_info(self):
+    def put_info(self, cash_size):
         print('\rВставляем информацию о дочерних кадастрах: {0}%'.format(0), end='')
         s = self.wb['Sheet']
         cnt = 0
@@ -73,7 +76,7 @@ class Search():
                 kn = s.cell(row=i, column=19).value
                 list_kn.append((i, kn))
 
-            if len(list_kn) >= 1000 or i == cnt - 1:
+            if len(list_kn) >= cash_size or i == cnt - 1:
                 query = "select * from reimport_rtneo_refactor where cadastral_number in ("
                 id_by_kn = {}
                 for id, kn in list_kn:
@@ -95,3 +98,24 @@ class Search():
         print('\rСохраняем', end='')
         self.wb.save('Выгрузка/1.xlsx')
         print(bcolors.OKGREEN + '\r3) Информация вставлена в файл с дочерними кадастрами' + bcolors.ENDC)
+
+    def reformat_uk_json(self):
+        print('\rОбработка uk_JSON', end='')
+        files = glob.glob('Выгрузка/uk_json/*.txt')
+        type_of, super_dict = {}, {}
+
+        for f in files:
+            dic = open(f, 'r').read()
+            dic = json.loads(dic)
+            type_of[f.split('.')[0]] = dic
+
+        for key, val in type_of.items():
+            for i in val['House']:
+                house = i['Address'].split(', ')[-1].split('. ')[1].upper()
+                street = i['Address'].split(', ')[-2].split('. ')[1].upper()
+                super_dict['{0}||{1}'.format(street, house)] = {'type uk': key, 'LicenseNumber': val['LicenseNumber'],
+                                                                'LicenseRegDate': val['LicenseRegDate'], 'house': i}
+
+        f = open('Выгрузка/uk_json/super_dict.json', 'w', encoding='utf-8')
+        json.dump(super_dict, f, ensure_ascii=False)
+        print(bcolors.OKGREEN + '\r4) Словарь с обработанными адресами uk создан' + bcolors.ENDC)
