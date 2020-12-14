@@ -1,6 +1,7 @@
 *.txt
 *.xlsx
 *.json
+info.py
 
 __pycache__/
 *.py[cod]
