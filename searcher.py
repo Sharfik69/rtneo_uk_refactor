@@ -1,5 +1,6 @@
-import json
+import copy
 import glob
+import json
 
 import psycopg2
 from openpyxl import load_workbook, Workbook
@@ -14,6 +15,7 @@ class Search():
         self.conn = psycopg2.connect(dbname='reimport2', user='cuba',
                                      password='cuba', host='localhost')
         self.cursor = self.conn.cursor()
+        # self.wb = load_workbook('Выгрузка/1.xlsx') #Для теста
 
     def put_daughter(self):
         print('\rВставляем дочерние кадастры', end='')
@@ -58,7 +60,6 @@ class Search():
 
         print(bcolors.OKGREEN + '\r2) Сформирован файл со всеми дочерними адресами' + bcolors.ENDC)
 
-
     def put_info(self, cash_size):
         print('\rВставляем информацию о дочерних кадастрах: {0}%'.format(0), end='')
         s = self.wb['Sheet']
@@ -67,7 +68,7 @@ class Search():
             if s.cell(row=i, column=18).value == None and s.cell(row=i, column=19).value == None:
                 cnt = i
                 break
-
+        self.cnt = cnt
         list_kn = []
         for i in range(2, cnt):
             print('\rВставляем информацию о дочерних кадастрах: {0}% ({1}/{2})'.format(i * 100 // cnt, i, cnt), end='')
@@ -119,3 +120,32 @@ class Search():
         f = open('Выгрузка/uk_json/super_dict.json', 'w', encoding='utf-8')
         json.dump(super_dict, f, ensure_ascii=False)
         print(bcolors.OKGREEN + '\r4) Словарь с обработанными адресами uk создан' + bcolors.ENDC)
+
+    def put_uk_info(self):
+        print('\rВставляем информацию из ук в файл с дочерними', end='')
+        s = self.wb['Sheet']
+        inf = json.loads(open('Выгрузка/uk_json/super_dict.json', 'r').read())
+        not_found_dict = copy.deepcopy(inf)
+
+        for i in range(2, self.cnt):
+            street = s.cell(row=i, column=8).value
+            house = s.cell(row=i, column=9).value
+            key = '{0}||{1}'.format(street, house)
+
+            if key in inf:
+
+                s.cell(row=i, column=1).value = inf[key].get('type uk')
+                s.cell(row=i, column=2).value = inf[key].get('LicenseNumber')
+                s.cell(row=i, column=3).value = inf[key].get('LicenseRegDate')
+                s.cell(row=i, column=4).value = inf[key]['house'].get('FiasHouseGuid')
+                s.cell(row=i, column=5).value = inf[key]['house'].get('ContractGuid')
+
+                if key in not_found_dict:
+                    del not_found_dict[key]
+
+        self.wb.save('Выгрузка/2.xlsx')
+        f = open('Выгрузка/непопавшие.json', 'w', encoding='utf-8')
+        json.dump(not_found_dict, f, ensure_ascii=False, sort_keys=True, indent=4, )
+
+        print(bcolors.OKGREEN + '\r5) Информация из ук была проставлена. Не синхронизировалось {0} адресов'.format(
+            len(not_found_dict)) + bcolors.ENDC)
