@@ -1,3 +1,4 @@
+import math
 import time
 
 from divider import Divider
@@ -7,7 +8,7 @@ from searcher import Search
 start_time = time.time()
 a = WeHave('зима', 'Зима', '38:35')
 
-a.create_rtneo_file()
+# a.create_rtneo_file()
 
 a = Search('')
 
@@ -21,5 +22,7 @@ a.put_uk_info()
 b = Divider()
 b.divide_by_assignation_code()
 b.divide_by_type_uk()
+b.only_uk()
+b.without_uk()
 
-print("%s seconds" % (time.time() - start_time))
+print("Отработано за %s секунд" % math.ceil(time.time() - start_time))

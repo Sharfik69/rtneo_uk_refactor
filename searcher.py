@@ -58,7 +58,7 @@ class Search():
                 row_new += 1
         self.wb = wb_new
 
-        print(bcolors.OKGREEN + '\r2) Сформирован файл со всеми дочерними адресами' + bcolors.ENDC)
+        print(bcolors.OKGREEN + '\rСформирован файл со всеми дочерними адресами' + bcolors.ENDC)
 
     def put_info(self, cash_size):
         print('\rВставляем информацию о дочерних кадастрах: {0}%'.format(0), end='')
@@ -98,7 +98,7 @@ class Search():
                             s.cell(row=row, column=27 + id).value = owner
         print('\rСохраняем', end='')
         self.wb.save('Выгрузка/1.xlsx')
-        print(bcolors.OKGREEN + '\r3) Информация вставлена в файл с дочерними кадастрами' + bcolors.ENDC)
+        print(bcolors.OKGREEN + '\rИнформация вставлена в файл с дочерними кадастрами' + bcolors.ENDC)
 
     def reformat_uk_json(self):
         print('\rОбработка uk_JSON', end='')
@@ -119,7 +119,7 @@ class Search():
 
         f = open('Выгрузка/uk_json/super_dict.json', 'w', encoding='utf-8')
         json.dump(super_dict, f, ensure_ascii=False)
-        print(bcolors.OKGREEN + '\r4) Словарь с обработанными адресами uk создан' + bcolors.ENDC)
+        print(bcolors.OKGREEN + '\rСловарь с обработанными адресами uk создан' + bcolors.ENDC)
 
     def put_uk_info(self):
         print('\rВставляем информацию из ук в файл с дочерними', end='')
@@ -147,5 +147,5 @@ class Search():
         f = open('Выгрузка/непопавшие.json', 'w', encoding='utf-8')
         json.dump(not_found_dict, f, ensure_ascii=False, sort_keys=True, indent=4, )
 
-        print(bcolors.OKGREEN + '\r5) Информация из ук была проставлена. Не синхронизировалось {0} адресов'.format(
+        print(bcolors.OKGREEN + '\rИнформация из ук была проставлена. Не синхронизировалось {0} адресов'.format(
             len(not_found_dict)) + bcolors.ENDC)

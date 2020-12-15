@@ -36,6 +36,40 @@ def divider(column_specific, wb, daughter=True):
                 break
     return assignation_code
 
+def uk_divider(wb, daughter=True, name=''):
+    s = wb['Sheet']
+    i, our_row = 2, 1
+    wb_new = Workbook()
+    s_new = wb_new.active
+
+    while True:
+        checker = s.cell(row=i, column=13).value == None and s.cell(row=i, column=19).value == None
+        if checker:
+            break
+
+        loc = s.cell(row=i, column=1).value
+        if loc is None:
+            i += 1
+            continue
+
+        for j in range(1, 40):
+            s_new.cell(row=our_row, column=j).value = s.cell(row=i, column=j).value
+
+        our_row += 1
+        i += 1
+
+        if not daughter:
+            continue
+
+        while s.cell(row=i, column=14).value is None:
+            for col_ in range(19, 50):
+                s_new.cell(row=our_row, column=col_).value = s.cell(row=i, column=col_).value
+            our_row += 1
+            i += 1
+
+    wb_new.save('Выгрузка/' + name + '.xlsx')
+
+
 class Divider():
     def __init__(self, wb=None, path='Выгрузка/2.xlsx'):
         if wb is not None:
@@ -62,3 +96,53 @@ class Divider():
             item['wb'].save('Выгрузка/' + ass + ' без дочерних.xlsx')
 
         print(bcolors.OKGREEN + '\rФайл был разделен по типу ук' + bcolors.ENDC)
+
+    def only_uk(self):
+        print('\rДелим на файлы только с ук', end='')
+
+        uk_divider(self.wb, name='ук с дочерними')
+        uk_divider(self.wb, daughter=False,name='ук без дочерними')
+
+        print(bcolors.OKGREEN + '\rДва укашных файла созданы' + bcolors.ENDC)
+
+    def without_uk(self):
+        print('\rДелаем файл без ук', end='')
+
+        s = self.wb['Sheet']
+
+        wb_daughters, wb_without_daughter = Workbook(), Workbook()
+        s_d, s_without = wb_daughters.active, wb_without_daughter.active
+
+        r_d, r_without = 1, 1
+        i = 2
+
+        while True:
+            checker = s.cell(row=i, column=13).value == None and s.cell(row=i, column=19).value == None
+            if checker:
+                break
+
+            if not (s.cell(row=i, column=1).value is None and s.cell(row=i, column=13).value is not None):
+                i += 1
+                continue
+
+            for col_ in range(1, 30):
+                s_d.cell(row=r_d, column=col_).value = s.cell(row=i, column=col_).value
+                s_without.cell(row=r_without, column=col_).value = s.cell(row=i, column=col_).value
+
+            r_d += 1
+            r_without += 1
+            i += 1
+
+            while s.cell(row=i, column=14).value is None:
+                for col_ in range(19, 50):
+                    s_d.cell(row=r_d, column=col_).value = s.cell(row=i, column=col_).value
+                r_d += 1
+                i += 1
+                if s.cell(row=i, column=19).value == None:
+                    break
+
+        wb_without_daughter.save('Выгрузка/Адреса без ук, без дочерних.xlsx')
+        wb_daughters.save('Выгрузка/Адреса без ук, с дочерними.xlsx')
+
+        print(bcolors.OKGREEN + '\rДва файла без ук созданы' + bcolors.ENDC)
+
