@@ -114,7 +114,7 @@ class Search():
             for i in val['House']:
                 house = i['Address'].split(', ')[-1].split('. ')[1].upper()
                 street = i['Address'].split(', ')[-2].split('. ')[1].upper()
-                super_dict['{0}||{1}'.format(street, house)] = {'type uk': key, 'LicenseNumber': val['LicenseNumber'],
+                super_dict['{0}||{1}'.format(street, house)] = {'type uk': key.split('/')[-1], 'LicenseNumber': val['LicenseNumber'],
                                                                 'LicenseRegDate': val['LicenseRegDate'], 'house': i}
 
         f = open('Выгрузка/uk_json/super_dict.json', 'w', encoding='utf-8')

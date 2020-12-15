@@ -20,5 +20,6 @@ a.put_uk_info()
 
 b = Divider()
 b.divide_by_assignation_code()
+b.divide_by_type_uk()
 
 print("%s seconds" % (time.time() - start_time))
