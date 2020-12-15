@@ -1,4 +1,3 @@
-import pickle
 import time
 
 from divider import Divider

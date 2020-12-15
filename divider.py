@@ -4,7 +4,7 @@ from colors import bcolors
 
 
 class Divider():
-    def __init__(self, wb = None, path = 'Выгрузка/2.xlsx'):
+    def __init__(self, wb=None, path='Выгрузка/2.xlsx'):
         if wb is not None:
             self.wb = wb
         else:
